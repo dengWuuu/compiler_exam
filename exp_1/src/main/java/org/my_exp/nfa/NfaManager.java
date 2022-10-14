@@ -1,29 +1,29 @@
 package org.my_exp.nfa;
 
+import lombok.Data;
 import org.my_exp.simple.Cell;
 
 import java.util.Stack;
 
-
+@Data
 public class NfaManager {
-    private final int NFA_MAX = 256; 
-    private Cell[] nfaStatesArr = null;
-    private Stack<Cell> nfaStack = null;
+	private final Cell[] nfaStatesArr;
+    private final Stack<Cell> nfaStack;
     private int nextAlloc = 0; 
     private int nfaStates = 0; 
     
     public NfaManager()  {
-    	nfaStatesArr = new Cell[NFA_MAX];
+		int NFA_MAX = 256;
+		nfaStatesArr = new Cell[NFA_MAX];
     	for (int i = 0; i < NFA_MAX; i++) {
     		nfaStatesArr[i] = new Cell();
     	}
     	
-    	nfaStack = new Stack<Cell>();
+    	nfaStack = new Stack<>();
     	
     }
-    
     public Cell newNfa()  {
-    	Cell nfa = null;
+    	Cell nfa;
     	if (nfaStack.size() > 0) {
     		nfa = nfaStack.pop();
     	}
@@ -34,16 +34,8 @@ public class NfaManager {
     	
     	nfa.clearState();
     	nfa.setState(nfaStates++);
-    	nfa.setEdge(Cell.EPSILON);
+    	nfa.setType(Cell.EPSILON);
     	
     	return nfa;
     }
-    
-    public void discardNfa(Cell nfaDiscarded) {
-    	--nfaStates;
-    	nfaDiscarded.clearState();
-    	nfaStack.push(nfaDiscarded);
-    }
-    
-   
 }

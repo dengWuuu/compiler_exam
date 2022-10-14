@@ -1,52 +1,54 @@
 package org.my_exp.simple;
 
+
+/**
+ * 节点
+ */
 public class Cell {
-	public static final int EPSILON = -1;
-	public static final int EMPTY = -2; 
+    public static final int EPSILON = -1;
 
-	private int edge;
+    private int type;
 
-	public int getEdge() {
-		return edge;
-	}
+    public int getType() {
+        return type;
+    }
 
-	public void setEdge(int type) {
-		edge = type;
-	}
+    public void setType(int type) {
+        this.type = type;
+    }
 
-	public Cell next; 
-	public Cell next2; 
-	private int state;
-	private boolean visited = false;
-	
-	public void setVisited() {
-		visited = true;
-	}
+    public Cell next;
+    public Cell next2;
+    private int state;
+    private boolean visited = false;
 
-	public void setUnVisited() {
-		visited = false;
-	}
-	
-	public boolean isVisited() {
-		return visited;
-	}
+    public void setVisited() {
+        visited = true;
+    }
 
-	public void setState(int num) {
-		state = num;
-	}
+    public void setUnVisited() {
+        visited = false;
+    }
 
-	public int getState() {
-		return state;
-	}
+    public boolean isVisited() {
+        return visited;
+    }
 
+    public void setState(int num) {
+        state = num;
+    }
 
-	public void clearState() {
-    	next = next2 = null;
-    	state = -1;		
-	}
-	
-	@Override
-	public String toString() {
-		return (char)edge+" "+state+""+isVisited();
-	}
+    public int getState() {
+        return state;
+    }
+
+    public void clearState() {
+        next = next2 = null;
+        state = -1;
+    }
+
+    @Override
+    public String toString() {
+        return (char) type + " " + state + "" + isVisited();
+    }
 }

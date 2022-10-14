@@ -12,8 +12,8 @@ import java.util.Map.Entry;
 
 
 public class MFA {
-    private List<Character[]> dfa;
-    private List<Character[]> mfa = new ArrayList<>();
+    private final List<Character[]> dfa;
+    private final List<Character[]> mfa = new ArrayList<>();
     private String[] letter;
     private List<Character> endState;
     private ConsoleTable table;

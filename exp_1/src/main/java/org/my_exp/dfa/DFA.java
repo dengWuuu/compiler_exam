@@ -16,13 +16,13 @@ import java.util.Set;
 
 
 public class DFA {
-    private Pair pair;
-    private String[] letter;
-    private ConsoleTable table;
-    private Map<Set<Integer>, Integer> map;
+    private final Pair pair;
+    private final String[] letter;
+    private final ConsoleTable table;
+    private final Map<Set<Integer>, Integer> map;
     private Set<Integer> tempset;
-    private Queue<Integer> queue = new LinkedList<>();
-    private List<Character[]> dfa = new ArrayList<>();
+    private final Queue<Integer> queue = new LinkedList<>();
+    private final List<Character[]> dfa = new ArrayList<>();
     private List<Character> endState = new ArrayList<>();
 
     private int state = 'A';
@@ -118,7 +118,7 @@ public class DFA {
                     revisit();
                     if (cell == null) {
                         continue;
-                    } else if ((char) cell.getEdge() == letter[i].charAt(0)) {
+                    } else if ((char) cell.getType() == letter[i].charAt(0)) {
                         midset.add(cell.next.getState());
                     }
                 }
@@ -164,7 +164,7 @@ public class DFA {
             return;
         cell.setVisited();
         tempset.add(cell.getState());
-        if (cell.getEdge() == -1 || cell.getEdge() == i) {
+        if (cell.getType() == -1 || cell.getType() == i) {
             connect(cell.next, i);
             connect(cell.next2, i);
         } else

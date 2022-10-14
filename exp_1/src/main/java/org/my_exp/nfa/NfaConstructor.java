@@ -1,10 +1,12 @@
 package org.my_exp.nfa;
 
 
+import lombok.Data;
 import org.my_exp.simple.Pair;
 
+@Data
 public class NfaConstructor {
-	private NfaManager nfaManager = null;
+	private NfaManager nfaManager;
 
 	public NfaConstructor() {
 		nfaManager = new NfaManager();
@@ -50,7 +52,7 @@ public class NfaConstructor {
 		pairOut.startNode = nfaManager.newNfa();
 		pairOut.endNode = nfaManager.newNfa();
 		pairOut.startNode.next = pairOut.endNode;
-		pairOut.startNode.setEdge(c);
+		pairOut.startNode.setType(c);
 
 		return pairOut;
 	}

@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 输出工具类：参考网上
+ * @author Wu
+ */
 public class ConsoleTable {
 
-	private final LinkedList<List> rows = new LinkedList<>();
+	private final LinkedList<List<Object>> rows = new LinkedList<>();
 
 	private final int colum;
 
 	private final int[] columLen;
 
-	private boolean printHeader = false;
+	private final boolean printHeader;
 
 	public ConsoleTable(int colum, boolean printHeader) {
 		this.printHeader = printHeader;
@@ -20,13 +24,16 @@ public class ConsoleTable {
 		this.columLen = new int[colum];
 	}
 
+	/**
+	 * 构造行
+	 */
 	public void appendRow() {
 		if (!rows.isEmpty()) {
-			List temp = rows.getLast();
+			List<Object> temp = rows.getLast();
 			if (temp.isEmpty())
 				return;
 		}
-		List row = new ArrayList(colum);
+		List<Object> row = new ArrayList(colum);
 		rows.add(row);
 	}
 
@@ -38,7 +45,7 @@ public class ConsoleTable {
 		if (value == null) {
 			value = "NULL";
 		}
-		List row = rows.get(rows.size() - 1);
+		List<Object> row = rows.get(rows.size() - 1);
 		row.add(value);
 		int len = value.toString().getBytes().length;
 		if (columLen[row.size() - 1] < len)
@@ -60,7 +67,7 @@ public class ConsoleTable {
 		else
 			buf.append("|").append(printChar('-', sumlen + margin * 2 * colum + (colum - 1))).append("|\n");
 		for (int ii = 0; ii < rows.size(); ii++) {
-			List row = rows.get(ii);
+			List<Object> row = rows.get(ii);
 			for (int i = 0; i < colum; i++) {
 				String o = "";
 				if (i < row.size())
