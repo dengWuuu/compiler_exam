@@ -18,7 +18,6 @@ public class test {
 		nfa.re2nfa();
 		//打印
 		nfa.print();
-		
 		in.close();
 	}
 }

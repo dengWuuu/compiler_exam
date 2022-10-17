@@ -25,7 +25,7 @@ public class ConsoleTable {
 	}
 
 	/**
-	 * 构造行
+	 * create everyRow in the graph
 	 */
 	public void appendRow() {
 		if (!rows.isEmpty()) {
@@ -33,15 +33,14 @@ public class ConsoleTable {
 			if (temp.isEmpty())
 				return;
 		}
-		List<Object> row = new ArrayList(colum);
+		List<Object> row = new ArrayList<>(colum);
 		rows.add(row);
 	}
 
 	/*
-	 * public void appendRow() { List row = new ArrayList(colum); rows.add(row); }
+	 * crete everyCol in the graph
 	 */
-
-	public ConsoleTable appendColum(Object value) {
+	public void appendColum(Object value) {
 		if (value == null) {
 			value = "NULL";
 		}
@@ -50,9 +49,12 @@ public class ConsoleTable {
 		int len = value.toString().getBytes().length;
 		if (columLen[row.size() - 1] < len)
 			columLen[row.size() - 1] = len;
-		return this;
 	}
 
+	/**
+	 * 核心方法 ， 将数据结构转换成可视化的表格
+	 * @return
+	 */
 	@Override
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
@@ -85,11 +87,7 @@ public class ConsoleTable {
 	}
 
 	private String printChar(char c, int len) {
-		StringBuilder buf = new StringBuilder();
-		for (int i = 0; i < len; i++) {
-			buf.append(c);
-		}
-		return buf.toString();
+		return String.valueOf(c).repeat(Math.max(0, len));
 	}
 
 }

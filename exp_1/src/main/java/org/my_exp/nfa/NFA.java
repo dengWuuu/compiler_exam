@@ -5,9 +5,7 @@ import org.my_exp.print.ConsoleTable;
 import org.my_exp.simple.Cell;
 import org.my_exp.simple.Pair;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * NFA类
@@ -40,7 +38,7 @@ public class NFA {
         Set<Character> temp = new HashSet<>();
         //记录正则表达式的字母
         for (int i = 0; i < this.re.length(); i++) {
-            if (is_letter(this.re.charAt(i))) {
+            if (isLetter(this.re.charAt(i))) {
                 temp.add(this.re.charAt(i));
             }
         }
@@ -63,12 +61,16 @@ public class NFA {
         for (String string : letters) {
             table.appendColum(string);
         }
-        //TODO 分析这两是干嘛的
-        this.addJoinSymbol();
+        //如果两个符号是union的就用.来表示
+        this.addUnionSymbol();
+        //获取这个字符串的后缀表达式
         this.postfix();
     }
 
-    public void addJoinSymbol() {
+    /**
+     * 符号之间加入.
+     */
+    public void addUnionSymbol() {
         int length = re.length();
         if (length == 1) {
             System.out.println("add join symbol:" + re);
@@ -76,62 +78,71 @@ public class NFA {
             return;
         }
         int return_string_length = 0;
-        char[] return_string = new char[2 * length + 2];
+        //字符与字符之间union的话用.来表示的字符串
+        char[] reJoinStr = new char[2 * length + 2];
         char first, second = '0';
+        //遍历加入如果union就加入.
         for (int i = 0; i < length - 1; i++) {
             first = re.charAt(i);
             second = re.charAt(i + 1);
-            return_string[return_string_length++] = first;
-            if (first != '(' && first != '|' && is_letter(second)) {
-                return_string[return_string_length++] = '.';
+            reJoinStr[return_string_length++] = first;
+            if (first != '(' && first != '|' && isLetter(second)) {
+                reJoinStr[return_string_length++] = '.';
             } else if (second == '(' && first != '|' && first != '(') {
-                return_string[return_string_length++] = '.';
+                reJoinStr[return_string_length++] = '.';
             }
         }
-        return_string[return_string_length++] = second;
-        String rString = new String(return_string, 0, return_string_length);
+        reJoinStr[return_string_length++] = second;
+        String rString = new String(reJoinStr, 0, return_string_length);
         System.out.println("add join symbol:" + rString);
-        System.out.println();
         reJoined = rString;
     }
 
-    private boolean is_letter(char check) {
+    private boolean isLetter(char check) {
         return check >= 'a' && check <= 'z' || check >= 'A' && check <= 'Z';
     }
 
+    /**
+     * 将字符串变成后缀表达式 get the str postfix
+     */
     public void postfix() {
         reJoined = reJoined + "#";
-
-        Stack<Character> s = new Stack<>();
-        char ch = '#', ch1, op;
+        //双向队列模拟栈，转化为后缀表达式的工具
+        Deque<Character> s = new LinkedList<>();
+        char ch = '#', ch1, op; //特殊符号表示截止
         s.push(ch);
-        String out_string = "";
-        int read_location = 0;
-        ch = reJoined.charAt(read_location++);
-        while (!s.empty()) {
-            if (is_letter(ch)) {
-                out_string = out_string + ch;
-                ch = reJoined.charAt(read_location++);
+        StringBuilder postfixStr = new StringBuilder();
+        int idx = 0;
+        ch = reJoined.charAt(idx++);
+        //开始构造后缀表达式
+        while (!s.isEmpty()) {
+            //是字符直接加入后缀表达式
+            if (isLetter(ch)) {
+                postfixStr.append(ch);
+                ch = reJoined.charAt(idx++);
             } else {
                 ch1 = s.peek();
                 if (isp(ch1) < icp(ch)) {
                     s.push(ch);
-                    ch = reJoined.charAt(read_location++);
+                    ch = reJoined.charAt(idx++);
                 } else if (isp(ch1) > icp(ch)) {
                     op = s.pop();
-                    out_string = out_string + op;
+                    postfixStr.append(op);
                 } else {
                     op = s.pop();
-                    if (op == '(')
-                        ch = reJoined.charAt(read_location++);
+                    //如果是（还可以继续 如果是#表示结束
+                    if (op == '(') ch = reJoined.charAt(idx++);
                 }
             }
         }
-        System.out.println("postfix:" + out_string);
+        System.out.println("postfix:" + postfixStr);
         System.out.println();
-        rePostfix = out_string;
+        rePostfix = postfixStr.toString();
     }
 
+    /**
+     * 网上借鉴的判断优先级的简单方法 judge priority
+     */
     private int isp(char c) {
         return switch (c) {
             case '#' -> 0;
@@ -143,7 +154,6 @@ public class NFA {
             default -> -1;
         };
     }
-
     private int icp(char c) {
         return switch (c) {
             case '#' -> 0;
