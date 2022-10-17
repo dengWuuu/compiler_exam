@@ -8,17 +8,21 @@ import org.my_exp.nfa.NFA;
 public class test {
 
 	public static void main(String[] args) {
-		Scanner in = new Scanner(System.in);
-		System.out.println("input a regular expression");
-		String re = in.nextLine();
-		System.out.println("re:" + re);
-		//初始化NFA
-		NFA nfa = new NFA(re);
-		//转换成NFA
-		nfa.re2nfa();
-		//打印
-		nfa.print();
-		in.close();
+		try {
+			Scanner in = new Scanner(System.in);
+			System.out.println("input a regular expression");
+			String re = in.nextLine();
+			System.out.println("re:" + re);
+			//初始化NFA
+			NFA nfa = new NFA(re);
+			//转换成NFA
+			nfa.re2nfa();
+			//打印
+			nfa.print();
+			in.close();
+		}catch (Exception e){
+			System.out.println("输入正则表达式有问题");
+		}
 	}
 }
 

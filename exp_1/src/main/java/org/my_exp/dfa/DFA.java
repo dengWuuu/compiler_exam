@@ -1,8 +1,8 @@
 package org.my_exp.dfa;
 
+import org.my_exp.node.Node;
 import org.my_exp.print.ConsoleTable;
-import org.my_exp.simple.Cell;
-import org.my_exp.simple.Pair;
+import org.my_exp.node.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,18 +114,18 @@ public class DFA {
                 tempset = new HashSet<>();
                 Set<Integer> midset = new HashSet<>();
                 for (Integer integer : set) {
-                    Cell cell = getCell(pair.startNode, integer);
+                    Node node = getCell(pair.startNode, integer);
                     revisit();
-                    if (cell == null) {
+                    if (node == null) {
                         continue;
-                    } else if ((char) cell.getType() == letter[i].charAt(0)) {
-                        midset.add(cell.next.getState());
+                    } else if ((char) node.getType() == letter[i].charAt(0)) {
+                        midset.add(node.next1.getState());
                     }
                 }
                 for (Integer integer : midset) {
-                    Cell cell = getCell(pair.startNode, integer);
+                    Node node = getCell(pair.startNode, integer);
                     revisit();
-                    move(cell, -1);
+                    move(node, -1);
                 }
                 Integer c = getCharacter(tempset);
                 if (c == null) {
@@ -153,34 +153,34 @@ public class DFA {
         }
     }
 
-    private Set<Integer> move(Cell startNode, int i) {
+    private Set<Integer> move(Node startNode, int i) {
         connect(startNode, i);
         revisit();
         return tempset;
     }
 
-    private void connect(Cell cell, int i) {
-        if (cell == null || cell.isVisited())
+    private void connect(Node node, int i) {
+        if (node == null || node.isVisited())
             return;
-        cell.setVisited();
-        tempset.add(cell.getState());
-        if (cell.getType() == -1 || cell.getType() == i) {
-            connect(cell.next, i);
-            connect(cell.next2, i);
+        node.setVisited();
+        tempset.add(node.getState());
+        if (node.getType() == -1 || node.getType() == i) {
+            connect(node.next1, i);
+            connect(node.next2, i);
         } else
             return;
     }
 
-    private Cell getCell(Cell cell, int startstate) {
-        if (cell == null || cell.isVisited())
+    private Node getCell(Node node, int startstate) {
+        if (node == null || node.isVisited())
             return null;
-        cell.setVisited();
-        if (cell.getState() == startstate)
-            return cell;
-        if (cell.getState() > startstate)
+        node.setVisited();
+        if (node.getState() == startstate)
+            return node;
+        if (node.getState() > startstate)
             return null;
-        Cell temp1 = getCell(cell.next, startstate);
-        Cell temp2 = getCell(cell.next2, startstate);
+        Node temp1 = getCell(node.next1, startstate);
+        Node temp2 = getCell(node.next2, startstate);
         if (temp1 != null)
             return temp1;
         if (temp2 != null)
@@ -200,18 +200,18 @@ public class DFA {
         return null;
     }
 
-    private void revisit(Cell cell) {
-        if (cell == null || !cell.isVisited()) {
+    private void revisit(Node node) {
+        if (node == null || !node.isVisited()) {
             return;
         }
-        cell.setUnVisited();
-        revisit(cell.next);
-        revisit(cell.next2);
+        node.setUnVisited();
+        revisit(node.next1);
+        revisit(node.next2);
     }
 
     private void revisit() {
         pair.startNode.setUnVisited();
-        revisit(pair.startNode.next);
+        revisit(pair.startNode.next1);
         revisit(pair.startNode.next2);
     }
 

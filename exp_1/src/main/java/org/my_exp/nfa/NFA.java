@@ -1,9 +1,9 @@
 package org.my_exp.nfa;
 
 import lombok.Data;
+import org.my_exp.node.Node;
 import org.my_exp.print.ConsoleTable;
-import org.my_exp.simple.Cell;
-import org.my_exp.simple.Pair;
+import org.my_exp.node.Pair;
 
 import java.util.*;
 
@@ -31,7 +31,7 @@ public class NFA {
      *
      * @param re
      */
-    public NFA(String re) {
+    public NFA(String re) throws Exception {
         this.re = re;
         reJoined = null;
         rePostfix = null;
@@ -105,20 +105,20 @@ public class NFA {
     /**
      * 将字符串变成后缀表达式 get the str postfix
      */
-    public void postfix() {
+    public void postfix() throws Exception {
         reJoined = reJoined + "#";
         //双向队列模拟栈，转化为后缀表达式的工具
         Deque<Character> s = new LinkedList<>();
         char ch = '#', ch1, op; //特殊符号表示截止
         s.push(ch);
-        StringBuilder postfixStr = new StringBuilder();
+        StringBuilder postfixStrBuilder = new StringBuilder();
         int idx = 0;
         ch = reJoined.charAt(idx++);
         //开始构造后缀表达式
         while (!s.isEmpty()) {
             //是字符直接加入后缀表达式
             if (isLetter(ch)) {
-                postfixStr.append(ch);
+                postfixStrBuilder.append(ch);
                 ch = reJoined.charAt(idx++);
             } else {
                 ch1 = s.peek();
@@ -127,17 +127,28 @@ public class NFA {
                     ch = reJoined.charAt(idx++);
                 } else if (isp(ch1) > icp(ch)) {
                     op = s.pop();
-                    postfixStr.append(op);
+                    postfixStrBuilder.append(op);
                 } else {
                     op = s.pop();
                     //如果是（还可以继续 如果是#表示结束
                     if (op == '(') ch = reJoined.charAt(idx++);
                 }
             }
+            //错误处理
+            if (postfixStrBuilder.length() >= 2 && postfixStrBuilder.charAt(postfixStrBuilder.length() - 1) == '*' && postfixStrBuilder.charAt(postfixStrBuilder.length() - 2) == '*') {
+                System.out.println("正则表达式错误");
+                throw new Exception();
+            }
         }
-        System.out.println("postfix:" + postfixStr);
+        for (int i = 0; i < postfixStrBuilder.length(); i++) {
+            if (postfixStrBuilder.charAt(i) == '(' || postfixStrBuilder.charAt(i) == ')') {
+                System.out.println("正则表达式错误");
+                throw new Exception();
+            }
+        }
+        System.out.println("postfix:" + postfixStrBuilder);
         System.out.println();
-        rePostfix = postfixStr.toString();
+        rePostfix = postfixStrBuilder.toString();
     }
 
     /**
@@ -154,6 +165,7 @@ public class NFA {
             default -> -1;
         };
     }
+
     private int icp(char c) {
         return switch (c) {
             case '#' -> 0;
@@ -172,6 +184,7 @@ public class NFA {
         Pair right, left;
         NfaConstructor constructor = new NfaConstructor();
         char[] ch = rePostfix.toCharArray();
+        //Stack用来存储每一个NFA首尾节点
         Stack<Pair> stack = new Stack<>();
         for (char c : ch) {
             switch (c) {
@@ -218,26 +231,26 @@ public class NFA {
         System.out.println("end state: " + (this.pair.endNode.getState()));
     }
 
-    private void restate(Cell startNfa) {
+    private void restate(Node startNfa) {
         if (startNfa == null || startNfa.isVisited()) {
             return;
         }
         startNfa.setVisited();
         startNfa.setState(restate++);
-        restate(startNfa.next);
+        restate(startNfa.next1);
         restate(startNfa.next2);
     }
 
-    private void revisit(Cell startNfa) {
+    private void revisit(Node startNfa) {
         if (startNfa == null || !startNfa.isVisited()) {
             return;
         }
         startNfa.setUnVisited();
-        revisit(startNfa.next);
+        revisit(startNfa.next1);
         revisit(startNfa.next2);
     }
 
-    private void printNfa(Cell startNfa) {
+    private void printNfa(Node startNfa) {
         if (startNfa == null || startNfa.isVisited()) {
             return;
         }
@@ -245,24 +258,24 @@ public class NFA {
         startNfa.setVisited();
 
         printNfaNode(startNfa);
-        if (startNfa.next != null) {
+        if (startNfa.next1 != null) {
             table.appendRow();
         }
-        printNfa(startNfa.next);
+        printNfa(startNfa.next1);
         printNfa(startNfa.next2);
     }
 
-    private void printNfaNode(Cell node) {
-        if (node.next != null) {
+    private void printNfaNode(Node node) {
+        if (node.next1 != null) {
             table.appendColum(node.getState());
             if (node.getType() == -1) {
                 for (int i = 0; i < letters.length - 2; i++) {
                     table.appendColum(" ");
                 }
                 if (node.next2 != null)
-                    table.appendColum("{" + node.next.getState() + "," + node.next2.getState() + "}");
+                    table.appendColum("{" + node.next1.getState() + "," + node.next2.getState() + "}");
                 else
-                    table.appendColum("{" + node.next.getState() + "}");
+                    table.appendColum("{" + node.next1.getState() + "}");
             } else {
                 int index = getIndex("" + (char) node.getType());
                 for (int i = 0; i < letters.length - 1; i++) {
@@ -270,9 +283,9 @@ public class NFA {
                         table.appendColum(" ");
                     else {
                         if (node.next2 != null)
-                            table.appendColum("{" + node.next.getState() + "," + node.next2.getState() + "}");
+                            table.appendColum("{" + node.next1.getState() + "," + node.next2.getState() + "}");
                         else
-                            table.appendColum("{" + node.next.getState() + "}");
+                            table.appendColum("{" + node.next1.getState() + "}");
                     }
                 }
             }

@@ -1,24 +1,20 @@
-package org.my_exp.simple;
+package org.my_exp.node;
 
+
+import lombok.Data;
 
 /**
  * 节点
  */
-public class Cell {
+@Data
+public class Node {
     public static final int EPSILON = -1;
-
+    //什么字符能令上一个节点到这一个节点
     private int type;
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public Cell next;
-    public Cell next2;
+    public Node next1;
+    public Node next2;
+    //表示是哪个节点123456
     private int state;
     private boolean visited = false;
 
@@ -43,7 +39,7 @@ public class Cell {
     }
 
     public void clearState() {
-        next = next2 = null;
+        next1 = next2 = null;
         state = -1;
     }
 
