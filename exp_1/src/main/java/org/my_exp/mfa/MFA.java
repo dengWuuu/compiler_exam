@@ -45,7 +45,6 @@ public class MFA {
             for (Set<Character> set : copyOfTotalSet) {
                 if (isIndivisible(set)) {
                     count++;
-                    continue;
                 } else {
                     minimize(set);
                 }
@@ -57,16 +56,16 @@ public class MFA {
         totalSet.remove(state);
         Map<String, String> map = new HashMap<>();
         for (Character character : state) {
-            String aString = "";
+            StringBuilder aString = new StringBuilder();
             for (int i = 1; i < letter.length - 1; i++) {
-                aString += move(character, letter[i].charAt(0)) + "";
+                aString.append(move(character, letter[i].charAt(0)));
             }
-            String tempset = map.get(aString);
-            if (tempset == null) {
-                map.put(aString, character + "");
+            String tempSet = map.get(aString.toString());
+            if (tempSet == null) {
+                map.put(aString.toString(), character + "");
             } else {
-                tempset += character;
-                map.put(aString, tempset);
+                tempSet += character;
+                map.put(aString.toString(), tempSet);
             }
         }
         for (String str : map.values()) {

@@ -24,12 +24,8 @@ public class test {
             //打印
             nfa.print();
 
-            System.out.println(nfa.getPair());
-            System.out.println(Arrays.toString(nfa.getLetters()));
+            // NFA转成DFA
 
-            /**
-             * NFA转成DFA
-             */
             DFA dfa = new DFA(nfa.getPair(), nfa.getLetters());
             dfa.createDFA();
             dfa.printDFA();

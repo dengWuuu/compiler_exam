@@ -48,14 +48,14 @@ public class DFA {
             if (getSet(ch[0]) == null || Objects.requireNonNull(getSet(ch[0])).isEmpty()) {
                 continue;
             } else {
-                Character[] newch = new Character[ch.length];
+                Character[] newCh = new Character[ch.length];
                 for (int i = 0; i < ch.length; i++) {
                     if (ch[i] == null) continue;
                     Set<Integer> set = getSet(ch[i]);
-                    if (set == null || set.isEmpty()) newch[i] = null;
-                    else newch[i] = ch[i];
+                    if (set == null || set.isEmpty()) newCh[i] = null;
+                    else newCh[i] = ch[i];
                 }
-                redfa.add(newch);
+                redfa.add(newCh);
             }
         }
         return redfa;
@@ -74,8 +74,7 @@ public class DFA {
         System.out.println("--------DFA--------");
         System.out.print(table);
         for (Entry<Set<Integer>, Integer> entry : map.entrySet()) {
-            if (entry.getValue() == -1)
-                continue;
+            if (entry.getValue() == -1) continue;
             System.out.println((char) entry.getValue().intValue() + " = " + entry.getKey() + (isStart(entry.getKey()) ? " START " : "") + (isEnd(entry.getKey()) ? " END " : ""));
         }
         System.out.println("--------DFA--------");
@@ -108,17 +107,21 @@ public class DFA {
         queue.add(state++);
 
         while (!queue.isEmpty()) {
-            Character[] dfaLine = new Character[letter.length - 1];
+            Character[] dfaLine = new Character[letter.length - 1]; //记录有什么状态
             int character = queue.poll();
             table.appendRow();
             table.appendColum((char) character);
             dfaLine[0] = (char) character;
             Set<Integer> set = getSet(character);
+            //判断每个字母可以到达的状态
             for (int i = 1; i < letter.length - 1; i++) {
                 tempSet = new HashSet<>();
                 Set<Integer> midSet = new HashSet<>();
-                for (Integer integer : set) {
-                    Node node = getCell(pair.startNode, integer);
+                assert set != null;
+                for (Integer state : set) {
+                    //获取从startNode通过state能到的节点
+                    Node node = getNode(pair.startNode, state);
+                    //深度优先搜索后要状态清零
                     revisit();
                     if (node == null) {
                         continue;
@@ -127,11 +130,13 @@ public class DFA {
                     }
                 }
                 for (Integer integer : midSet) {
-                    Node node = getCell(pair.startNode, integer);
+                    Node node = getNode(pair.startNode, integer);
                     revisit();
+                    //找空闭包
                     move(node, -1);
                 }
                 Integer c = getCharacter(tempSet);
+                //不存在此状态则创建新状态
                 if (c == null) {
                     if (tempSet.isEmpty()) {
                         map.put(tempSet, -1);
@@ -158,44 +163,37 @@ public class DFA {
     }
 
     /**
-     * 对应书本的move操作
-     *
+     * 对应书本的move操作并且找到空集合闭包
      * @param startNode
      * @param i
      * @return
      */
     private Set<Integer> move(Node startNode, int i) {
-        connect(startNode, i);
+        closure(startNode, i);
         revisit();
         return tempSet;
     }
 
-    private void connect(Node node, int i) {
+    private void closure(Node node, int i) {
         if (node == null || node.isVisited())
             return;
         node.setVisited();
         tempSet.add(node.getState());
         if (node.getType() == -1 || node.getType() == i) {
-            connect(node.next1, i);
-            connect(node.next2, i);
+            closure(node.next1, i);
+            closure(node.next2, i);
         }
     }
 
-    private Node getCell(Node node, int startstate) {
-        if (node == null || node.isVisited())
-            return null;
+    private Node getNode(Node node, int startsState) {
+        if (node == null || node.isVisited()) return null;
         node.setVisited();
-        if (node.getState() == startstate)
-            return node;
-        if (node.getState() > startstate)
-            return null;
-        Node temp1 = getCell(node.next1, startstate);
-        Node temp2 = getCell(node.next2, startstate);
-        if (temp1 != null)
-            return temp1;
-        if (temp2 != null)
-            return temp2;
-        return null;
+        if (node.getState() == startsState) return node;
+        if (node.getState() > startsState) return null;
+        Node temp1 = getNode(node.next1, startsState);
+        Node temp2 = getNode(node.next2, startsState);
+        if (temp1 != null) return temp1;
+        return temp2;
     }
 
     private Integer getCharacter(Set<Integer> set) {

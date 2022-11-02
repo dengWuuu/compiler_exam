@@ -3,12 +3,14 @@ package org.my_exp.nfa;
 import lombok.Data;
 import org.my_exp.node.Node;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
 @Data
 public class NfaManager {
 	private final Node[] nfaStatesArr;
-    private final Stack<Node> nfaStack;
+    private final Deque<Node> nfaStack;
     private int nextAlloc = 0; 
     private int nfaStates = 0; 
     
@@ -19,7 +21,7 @@ public class NfaManager {
     		nfaStatesArr[i] = new Node();
     	}
     	
-    	nfaStack = new Stack<>();
+    	nfaStack = new ArrayDeque<>();
     	
     }
     public Node newNfa()  {

@@ -14,7 +14,7 @@ public class Node {
 
     public Node next1;
     public Node next2;
-    //表示是哪个节点123456
+    //表示是哪个节点 例子：1，2，3，4，5，6
     private int state;
     private boolean visited = false;
 
@@ -45,6 +45,10 @@ public class Node {
 
     @Override
     public String toString() {
-        return (char) type + " " + state + "" + isVisited();
+        return "Node{" +
+                "type=" + (char) type +
+                ", state=" + state +
+                ", visited=" + visited +
+                '}';
     }
 }
