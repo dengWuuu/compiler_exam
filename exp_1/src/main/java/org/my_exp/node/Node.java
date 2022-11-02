@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class Node {
     public static final int EPSILON = -1;
-    //什么字符能令上一个节点到这一个节点
+    //什么字符能令这一个节点到下一个节点
     private int type;
 
     public Node next1;

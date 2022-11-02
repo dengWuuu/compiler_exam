@@ -100,7 +100,7 @@ public class DFA {
     public void createDFA() {
         tempSet = new HashSet<>();
         //寻找空集合闭包作为DFA开始状态, -1代表空状态
-        Set<Integer> start = move(pair.startNode, -1);
+        Set<Integer> start = closure(pair.startNode);
         //集合放入HashMap中储存
         map.put(start, state);
         //队列储存已有状态
@@ -115,25 +115,17 @@ public class DFA {
             Set<Integer> set = getSet(character);
             //判断每个字母可以到达的状态
             for (int i = 1; i < letter.length - 1; i++) {
-                tempSet = new HashSet<>();
-                Set<Integer> midSet = new HashSet<>();
+                tempSet = new HashSet<>(); //构建的新的集合
+                Set<Integer> midSet = new HashSet<>(); //储存需要遍历的状态
                 assert set != null;
-                for (Integer state : set) {
-                    //获取从startNode通过state能到的节点
-                    Node node = getNode(pair.startNode, state);
-                    //深度优先搜索后要状态清零
-                    revisit();
-                    if (node == null) {
-                        continue;
-                    } else if ((char) node.getType() == letter[i].charAt(0)) {
-                        midSet.add(node.next1.getState());
-                    }
-                }
+                //move方法
+                move(set, i, midSet);
+                //对每一个节点closure
                 for (Integer integer : midSet) {
                     Node node = getNode(pair.startNode, integer);
                     revisit();
                     //找空闭包
-                    move(node, -1);
+                    closure(node);
                 }
                 Integer c = getCharacter(tempSet);
                 //不存在此状态则创建新状态
@@ -162,26 +154,39 @@ public class DFA {
         }
     }
 
+    private void move(Set<Integer> set, int i, Set<Integer> midSet) {
+        for (Integer state : set) {
+            //深度优先从startNode找到这个state这个节点
+            Node node = getNode(pair.startNode, state);
+            //深度优先搜索后要状态清零
+            revisit();
+            //这里对应move方法
+            if (node != null && (char) node.getType() == letter[i].charAt(0)) {
+                midSet.add(node.next1.getState());
+            }
+        }
+    }
+
     /**
      * 对应书本的move操作并且找到空集合闭包
+     *
      * @param startNode
-     * @param i
      * @return
      */
-    private Set<Integer> move(Node startNode, int i) {
-        closure(startNode, i);
+    private Set<Integer> closure(Node startNode) {
+        closureMain(startNode, -1);
         revisit();
         return tempSet;
     }
 
-    private void closure(Node node, int i) {
+    private void closureMain(Node node, int i) {
         if (node == null || node.isVisited())
             return;
         node.setVisited();
         tempSet.add(node.getState());
         if (node.getType() == -1 || node.getType() == i) {
-            closure(node.next1, i);
-            closure(node.next2, i);
+            closureMain(node.next1, i);
+            closureMain(node.next2, i);
         }
     }
 
