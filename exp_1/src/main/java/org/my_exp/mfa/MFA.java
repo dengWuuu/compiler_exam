@@ -14,12 +14,12 @@ import java.util.Map.Entry;
 public class MFA {
     private final List<Character[]> dfa;
     private final List<Character[]> mfa = new ArrayList<>();
-    private String[] letter;
-    private List<Character> endState;
-    private ConsoleTable table;
-    private Set<Set<Character>> totalSet = new HashSet<>();
+    private final String[] letter;
+    private final List<Character> endState;
+    private final ConsoleTable table;
+    private final Set<Set<Character>> totalSet = new HashSet<>();
 
-    private Map<Character, Character> map = new HashMap<>();
+    private final Map<Character, Character> map = new HashMap<>();
 
     public MFA(List<Character[]> dfa, List<Character> endState, String[] letter) {
         this.dfa = dfa;
