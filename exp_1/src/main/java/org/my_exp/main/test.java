@@ -32,7 +32,6 @@ public class test {
 
             MFA mfa = new MFA(dfa.getDFA(), dfa.getEndState(), dfa.getLetter());
             mfa.minimize();
-            mfa.merge();
             mfa.printMFA();
 
             System.out.println();
@@ -40,10 +39,8 @@ public class test {
             System.out.println("input test string, Q to exit");
             while (in.hasNextLine()) {
                 String string = in.nextLine();
-                if (string.equals("Q"))
-                    break;
-                else
-                    mfa.valid(string);
+                if (string.equals("Q")) break;
+                else mfa.valid(string);
                 System.out.println();
                 System.out.println("input test string, Q to exit");
             }

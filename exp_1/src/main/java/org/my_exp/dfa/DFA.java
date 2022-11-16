@@ -135,6 +135,7 @@ public class DFA {
                         table.appendColum("null");
                         dfaLine[i] = null;
                     } else {
+                        System.out.println("构造新的集合" + (char) state + tempSet);
                         queue.add(state);
                         table.appendColum((char) state);
                         dfaLine[i] = (char) state;
